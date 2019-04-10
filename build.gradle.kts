@@ -26,6 +26,15 @@ dependencies {
 
     // Use JUnit test framework
     testImplementation("junit:junit:4.12")
+
+    // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core
+    implementation("com.fasterxml.jackson.core:jackson-core:2.9.8")
+    implementation("com.fasterxml.jackson.core:jackson-annotations:2.9.8")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.9.8")
+
+    // https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient
+    implementation("org.apache.httpcomponents:httpclient:4.5.8")
+
 }
 
 application {
