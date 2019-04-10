@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 public class ApiTestData {
-    public static String API_SERVER_URL = "https://api.cognosos.net/";
+    public static String API_SERVER_HOST = "api.cognosos.net";
 
     public static String API_APP_CODE = "YOUR_APP_CODE";
     public static String API_USERNAME = "YOUR_APP_USERNAME";
@@ -16,8 +16,8 @@ public class ApiTestData {
             new InventoryItem("A1002", "1FTFW1CT8EFB42220", "Ford", "F-150", "SuperCrew (3.5L V6 TURBO), CREW CAB PICKUP 4-DR")
     };
 
-    public static Map<String, Object> getInventoryMap() {
-        Map<String, Object> inventoryMap = new HashMap<>();
+    public static Map<String, String> getInventoryMap() {
+        Map<String, String> inventoryMap = new HashMap<>();
         inventoryMap.put("asset_identifier", "A1001");
         inventoryMap.put("VIN", "1FTFW1RG0HFA66295");
         inventoryMap.put("Make", "Ford");
