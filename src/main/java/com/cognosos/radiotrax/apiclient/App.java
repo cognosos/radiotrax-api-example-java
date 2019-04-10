@@ -42,7 +42,7 @@ public class App {
             HttpPost httpPost = new HttpPost(postUrl);
 
             ObjectMapper mapper = new ObjectMapper();
-            String json = mapper.writeValueAsString(ApiTestData.inventory);
+            String json = mapper.writeValueAsString(InventoryData.inventory);
             httpPost.setEntity(new StringEntity(json, ContentType.APPLICATION_JSON));
 
             System.out.println("Executing request " + httpPost.getRequestLine() + " to target " + target);
