@@ -1,0 +1,7 @@
+{
+  "api_server": "https://api.cognosos.net:443",
+  "api_username": "YOUR_USERNAME",
+  "api_password": "YOUR_PASSWORD",
+  "api_app_code": "YOUR_APPCODE",
+  "api_apikey": null
+}
