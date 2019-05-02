@@ -20,6 +20,7 @@ import org.apache.http.util.EntityUtils;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Map;
 
 
 public class App {
@@ -50,6 +51,7 @@ public class App {
                 .setDefaultCredentialsProvider(credsProvider)
                 .build())
         {
+            addMissingCustomFieldsToPortal(httpclient, InventoryData.getFlagMap());
             insertInventoryRecords(httpclient);
             attachTracker(httpclient, "4010001", InventoryData.inventory[0]);
             detachTracker(httpclient, "4010001");
@@ -83,6 +85,17 @@ public class App {
 
         doRequest(httpclient, uri, jsonBody);
 
+    }
+
+    private void addMissingCustomFieldsToPortal(CloseableHttpClient httpclient, Map<Integer, String> flagMap) throws Exception {
+        for(var i: flagMap.entrySet()) {
+            var uri = new URIBuilder(target.toURI())
+                    .setParameter("application_code", config.api_app_code)
+                    .setPath("/customField/createCustomField")
+                    .setParameter("name", i.getValue())
+                    .build();
+            doRequest(httpclient, uri, null);
+        }
     }
 
     private void attachTracker(CloseableHttpClient httpclient, String deviceId, InventoryItem item) throws Exception {
