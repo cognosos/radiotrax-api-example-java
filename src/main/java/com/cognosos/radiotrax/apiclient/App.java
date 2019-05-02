@@ -1,6 +1,8 @@
 package com.cognosos.radiotrax.apiclient;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
 import org.apache.http.auth.AuthScope;
@@ -17,6 +19,8 @@ import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.Map;
 
 
 public class App {
@@ -47,6 +51,7 @@ public class App {
                 .setDefaultCredentialsProvider(credsProvider)
                 .build())
         {
+            addMissingCustomFieldsToPortal(httpclient, InventoryData.getFlagMap());
             insertInventoryRecords(httpclient);
             attachTracker(httpclient, "4010001", InventoryData.inventory[0]);
             detachTracker(httpclient, "4010001");
@@ -60,12 +65,37 @@ public class App {
                 .setParameter("x-api-key", config.api_apikey)
                 .build();
 
+        var output = new ArrayList<JsonNode>();
+        var flagMap = InventoryData.getFlagMap();
+
+        for(var i : InventoryData.inventory) {
+            var tree = mapper.valueToTree(i);
+            if(tree instanceof ObjectNode) {
+                for(var flagNumber : flagMap.keySet()) {
+                    var flagName = flagMap.get(flagNumber);
+                    ((ObjectNode)tree).put(flagName, i.getFlags().contains(flagNumber) ? "Yes" : "No");
+                }
+            }
+            output.add(tree);
+        }
+
         var jsonBody = mapper
                 .writerWithDefaultPrettyPrinter()
-                .writeValueAsString(InventoryData.inventory);
+                .writeValueAsString(output);
 
         doRequest(httpclient, uri, jsonBody);
 
+    }
+
+    private void addMissingCustomFieldsToPortal(CloseableHttpClient httpclient, Map<Integer, String> flagMap) throws Exception {
+        for(var i: flagMap.entrySet()) {
+            var uri = new URIBuilder(target.toURI())
+                    .setParameter("application_code", config.api_app_code)
+                    .setPath("/customField/createCustomField")
+                    .setParameter("name", i.getValue())
+                    .build();
+            doRequest(httpclient, uri, null);
+        }
     }
 
     private void attachTracker(CloseableHttpClient httpclient, String deviceId, InventoryItem item) throws Exception {
