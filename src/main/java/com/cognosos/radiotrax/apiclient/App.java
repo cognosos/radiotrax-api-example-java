@@ -1,6 +1,8 @@
 package com.cognosos.radiotrax.apiclient;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
 import org.apache.http.auth.AuthScope;
@@ -17,6 +19,7 @@ import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.ArrayList;
 
 
 public class App {
@@ -60,9 +63,23 @@ public class App {
                 .setParameter("x-api-key", config.api_apikey)
                 .build();
 
+        var output = new ArrayList<JsonNode>();
+        var flagMap = InventoryData.getFlagMap();
+
+        for(var i : InventoryData.inventory) {
+            var tree = mapper.valueToTree(i);
+            if(tree instanceof ObjectNode) {
+                for(var flagNumber : flagMap.keySet()) {
+                    var flagName = flagMap.get(flagNumber);
+                    ((ObjectNode)tree).put(flagName, i.getFlags().contains(flagNumber) ? "Yes" : "No");
+                }
+            }
+            output.add(tree);
+        }
+
         var jsonBody = mapper
                 .writerWithDefaultPrettyPrinter()
-                .writeValueAsString(InventoryData.inventory);
+                .writeValueAsString(output);
 
         doRequest(httpclient, uri, jsonBody);
 
